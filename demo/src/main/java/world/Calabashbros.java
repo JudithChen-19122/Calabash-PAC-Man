@@ -4,7 +4,7 @@ import java.awt.Color;
 
 import javax.lang.model.util.ElementScanner6;
 
-public class Calabashbros extends Creature implements Runnable{
+public class Calabashbros extends Creature{
 
      // everyone owns 3 life at first
     int score; //eat beans to get score
@@ -22,19 +22,55 @@ public class Calabashbros extends Creature implements Runnable{
         score= 0;
         magic_count = 10;
         ifmagic = false;
+        type=3;
+    }
+
+    @Override
+    public String saving_state(){
+        String state="";
+        state += getX()+" ";
+        state += getY()+" ";
+        state += ifmagic+" ";
+        state += isdead+" ";
+        state += life+" ";
+        state += score+" ";
+        state += magic_count+" ";
+        state += goal + "\n";
+        return state;
+    }
+
+    public void set_calabashbros(boolean ifm, boolean ifd, int lie, int sco, int magic_c, int go){
+        ifmagic=ifm;
+        isdead=ifd;
+        life=lie;
+        score = sco;
+        magic_count = magic_c;
+        goal = go;
     }
 
     public void setgoal(int g){
         goal=g;
     }
 
+    @Override
     public void setmagic(){
+        glyph = 15;
         magic_count = 0;
         ifmagic = true;
     }
+
+    @Override
+    public void set_glyph(char g){
+        glyph = g;
+    }
     
     public void magic_counter(){
-        if(magic_count<magictime)
+        if(magic_count == magictime-1) {
+            set_inmagic();
+            
+        }
+
+        else if(magic_count<magictime)
             magic_count++;
 
         if(magic_count<magictime)
@@ -43,10 +79,7 @@ public class Calabashbros extends Creature implements Runnable{
             ifmagic=false;  
             
         if(ifmagic){
-            glyph = 5;
-        }
-        else{
-            glyph = 2;
+            glyph = 15;
         }
     }
 
@@ -63,6 +96,13 @@ public class Calabashbros extends Creature implements Runnable{
     public boolean checkifmagic(){
         return ifmagic;
     }
+    //for replay
+    @Override
+    public void set_inmagic(){
+        magic_count = magictime;
+        ifmagic=false;
+        glyph=2;
+    }
 
     @Override
     public boolean attack(Creature creature){
@@ -78,7 +118,8 @@ public class Calabashbros extends Creature implements Runnable{
     public void run() {
         // TODO Auto-generated method stub
         while(!isdead){
-            magic_counter();
+            if(world.get_state()!=2)break;
+                magic_counter();
             //System.out.println("counter++");
             try {
                 Thread.sleep(1000);

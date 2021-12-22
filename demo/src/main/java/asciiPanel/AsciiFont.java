@@ -18,6 +18,10 @@ public class AsciiFont {
     public static final AsciiFont TAFFER_10x10 = new AsciiFont("resources/taffer_10x10.png", 10, 10);
     public static final AsciiFont QBICFEET_10x10 = new AsciiFont("resources/qbicfeet_10x10.png", 10, 10);
     public static final AsciiFont TALRYTH_15_15 = new AsciiFont("resources/talryth_square_15x15.png", 15, 15);
+    public static final AsciiFont CP437_49x49 = new AsciiFont("resources/cp437_49x49.png", 49, 49);
+    public static final AsciiFont Black = new AsciiFont("resources/Black.png", 16, 16);
+    public static final AsciiFont CP437_26x26 = new AsciiFont("resources/cp437_26x26.png", 26, 26);
+    public static final AsciiFont NCP437_16x16 = new AsciiFont("resources/newcp437_16x16.png", 16, 16);
 
     private String fontFilename;
 

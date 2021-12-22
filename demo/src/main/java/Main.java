@@ -21,7 +21,7 @@ public class Main extends JFrame implements KeyListener {
 
     public Main() throws IOException {
         super();
-        terminal = new AsciiPanel(World.WIDTH, World.HEIGHT+1, AsciiFont.TALRYTH_15_15);
+        terminal = new AsciiPanel(World.WIDTH, World.HEIGHT+1, AsciiFont.NCP437_16x16);
         add(terminal);
         pack();
         screen = new WorldScreen();
@@ -62,8 +62,8 @@ public class Main extends JFrame implements KeyListener {
 
     public static void main(String[] args) throws IOException {
         Main app = new Main();
-        app.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //在一个JFrame执行关闭操作时，将退出程序
-        app.setVisible(true); //允许JVM可以根据数据模型执行paint方法开始画图并显示到屏幕上了
+        app.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
+        app.setVisible(true); 
 
     }
 

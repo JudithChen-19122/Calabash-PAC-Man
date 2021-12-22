@@ -3,7 +3,7 @@ package world;
 import java.awt.Color;
 
 
-public class Creature extends Thing {
+public class Creature extends Thing  implements Runnable {
 
     Map map;
     boolean ifmagic;
@@ -16,7 +16,26 @@ public class Creature extends Thing {
         isdead=false;
         life=1;
         map=tmap;
+        type=2;
     }
+
+
+    public String saving_state(){
+        return "";
+    }
+
+    public void set_inmagic(){
+        ifmagic=false;
+    }
+
+    public void setmagic(){
+        ;
+    }
+    
+    public void set_glyph(char g){
+        ;
+    }
+    
 
     public int getlife(){
         return life;
@@ -64,6 +83,12 @@ public class Creature extends Thing {
 
     public  boolean attack(Creature creature){
         return true;
+    }
+
+    @Override
+    public void run() {
+        // TODO Auto-generated method stub
+        ;
     }
 }
 

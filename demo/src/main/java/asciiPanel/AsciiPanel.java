@@ -126,6 +126,7 @@ public class AsciiPanel extends JPanel {
      * 
      * @return
      */
+    /*
     public int getCharHeight() {
         return charHeight;
     }
@@ -135,6 +136,7 @@ public class AsciiPanel extends JPanel {
      * 
      * @return
      */
+    /*
     public int getCharWidth() {
         return charWidth;
     }
@@ -144,6 +146,7 @@ public class AsciiPanel extends JPanel {
      * 
      * @return
      */
+    /*
     public int getHeightInCharacters() {
         return heightInCharacters;
     }
@@ -153,6 +156,7 @@ public class AsciiPanel extends JPanel {
      * 
      * @return
      */
+    /*
     public int getWidthInCharacters() {
         return widthInCharacters;
     }
@@ -162,6 +166,7 @@ public class AsciiPanel extends JPanel {
      * 
      * @return
      */
+    /*
     public int getCursorX() {
         return cursorX;
     }
@@ -172,6 +177,7 @@ public class AsciiPanel extends JPanel {
      * 
      * @param cursorX the distance from the left new text should be written to
      */
+    /*
     public void setCursorX(int cursorX) {
         if (cursorX < 0 || cursorX >= widthInCharacters)
             throw new IllegalArgumentException(
@@ -185,6 +191,7 @@ public class AsciiPanel extends JPanel {
      * 
      * @return
      */
+    /*
     public int getCursorY() {
         return cursorY;
     }
@@ -195,6 +202,7 @@ public class AsciiPanel extends JPanel {
      * 
      * @param cursorY the distance from the top new text should be written to
      */
+    /*
     public void setCursorY(int cursorY) {
         if (cursorY < 0 || cursorY >= heightInCharacters)
             throw new IllegalArgumentException(
@@ -212,6 +220,7 @@ public class AsciiPanel extends JPanel {
      * @param x the distance from the left new text should be written to
      * @param y the distance from the top new text should be written to
      */
+    /*
     public void setCursorPosition(int x, int y) {
         setCursorX(x);
         setCursorY(y);
@@ -222,6 +231,7 @@ public class AsciiPanel extends JPanel {
      * 
      * @return
      */
+    /*
     public Color getDefaultBackgroundColor() {
         return defaultBackgroundColor;
     }
@@ -231,6 +241,7 @@ public class AsciiPanel extends JPanel {
      * 
      * @param defaultBackgroundColor
      */
+    /*
     public void setDefaultBackgroundColor(Color defaultBackgroundColor) {
         if (defaultBackgroundColor == null)
             throw new NullPointerException("defaultBackgroundColor must not be null.");
@@ -243,6 +254,7 @@ public class AsciiPanel extends JPanel {
      * 
      * @return
      */
+    /*
     public Color getDefaultForegroundColor() {
         return defaultForegroundColor;
     }
@@ -252,6 +264,7 @@ public class AsciiPanel extends JPanel {
      * 
      * @param defaultForegroundColor
      */
+    /*
     public void setDefaultForegroundColor(Color defaultForegroundColor) {
         if (defaultForegroundColor == null)
             throw new NullPointerException("defaultForegroundColor must not be null.");
@@ -264,6 +277,7 @@ public class AsciiPanel extends JPanel {
      * 
      * @return
      */
+    /*
     public AsciiFont getAsciiFont() {
         return asciiFont;
     }
@@ -449,6 +463,7 @@ public class AsciiPanel extends JPanel {
      * 
      * @return this for convenient chaining of method calls
      */
+
     public AsciiPanel clear() {
         return clear(' ', 0, 0, widthInCharacters, heightInCharacters, defaultForegroundColor, defaultBackgroundColor);
     }
@@ -460,6 +475,7 @@ public class AsciiPanel extends JPanel {
      * @param character the character to write
      * @return this for convenient chaining of method calls
      */
+    /*
     public AsciiPanel clear(char character) {
         if (character < 0 || character >= glyphs.length)
             throw new IllegalArgumentException(
@@ -478,6 +494,7 @@ public class AsciiPanel extends JPanel {
      * @param background the background color or null to use the default
      * @return this for convenient chaining of method calls
      */
+    /*
     public AsciiPanel clear(char character, Color foreground, Color background) {
         if (character < 0 || character >= glyphs.length)
             throw new IllegalArgumentException(
@@ -498,6 +515,7 @@ public class AsciiPanel extends JPanel {
      * @param height    the width of the section to clear
      * @return this for convenient chaining of method calls
      */
+    /*
     public AsciiPanel clear(char character, int x, int y, int width, int height) {
         if (character < 0 || character >= glyphs.length)
             throw new IllegalArgumentException(
@@ -584,6 +602,7 @@ public class AsciiPanel extends JPanel {
      * @param character the character to write
      * @return this for convenient chaining of method calls
      */
+    /*
     public AsciiPanel write(char character) {
         if (character < 0 || character > glyphs.length)
             throw new IllegalArgumentException(
@@ -601,6 +620,7 @@ public class AsciiPanel extends JPanel {
      * @param foreground the foreground color or null to use the default
      * @return this for convenient chaining of method calls
      */
+    /*
     public AsciiPanel write(char character, Color foreground) {
         if (character < 0 || character >= glyphs.length)
             throw new IllegalArgumentException(
@@ -619,6 +639,7 @@ public class AsciiPanel extends JPanel {
      * @param background the background color or null to use the default
      * @return this for convenient chaining of method calls
      */
+    /*
     public AsciiPanel write(char character, Color foreground, Color background) {
         if (character < 0 || character >= glyphs.length)
             throw new IllegalArgumentException(
@@ -636,6 +657,7 @@ public class AsciiPanel extends JPanel {
      * @param y         the distance from the top to begin writing from
      * @return this for convenient chaining of method calls
      */
+    /*
     public AsciiPanel write(char character, int x, int y) {
         if (character < 0 || character >= glyphs.length)
             throw new IllegalArgumentException(
@@ -717,6 +739,7 @@ public class AsciiPanel extends JPanel {
      * @param string the string to write
      * @return this for convenient chaining of method calls
      */
+    /*
     public AsciiPanel write(String string) {
         if (string == null)
             throw new NullPointerException("string must not be null");
@@ -736,6 +759,7 @@ public class AsciiPanel extends JPanel {
      * @param foreground the foreground color or null to use the default
      * @return this for convenient chaining of method calls
      */
+    /*
     public AsciiPanel write(String string, Color foreground) {
         if (string == null)
             throw new NullPointerException("string must not be null");
@@ -757,6 +781,7 @@ public class AsciiPanel extends JPanel {
      * @param background the background color or null to use the default
      * @return this for convenient chaining of method calls
      */
+    /*
     public AsciiPanel write(String string, Color foreground, Color background) {
         if (string == null)
             throw new NullPointerException("string must not be null");
@@ -767,7 +792,7 @@ public class AsciiPanel extends JPanel {
 
         return write(string, cursorX, cursorY, foreground, background);
     }
-
+    
     /**
      * Write a string to the specified position. This updates the cursor's position.
      * 
@@ -776,6 +801,7 @@ public class AsciiPanel extends JPanel {
      * @param y      the distance from the top to begin writing from
      * @return this for convenient chaining of method calls
      */
+    /*
     public AsciiPanel write(String string, int x, int y) {
         if (string == null)
             throw new NullPointerException("string must not be null");
@@ -792,7 +818,7 @@ public class AsciiPanel extends JPanel {
 
         return write(string, x, y, defaultForegroundColor, defaultBackgroundColor);
     }
-
+    
     /**
      * Write a string to the specified position with the specified foreground color.
      * This updates the cursor's position but not the default foreground color.
@@ -803,6 +829,7 @@ public class AsciiPanel extends JPanel {
      * @param foreground the foreground color or null to use the default
      * @return this for convenient chaining of method calls
      */
+    /*
     public AsciiPanel write(String string, int x, int y, Color foreground) {
         if (string == null)
             throw new NullPointerException("string must not be null");
@@ -819,7 +846,7 @@ public class AsciiPanel extends JPanel {
 
         return write(string, x, y, foreground, defaultBackgroundColor);
     }
-
+    
     /**
      * Write a string to the specified position with the specified foreground and
      * background colors. This updates the cursor's position but not the default
@@ -832,6 +859,7 @@ public class AsciiPanel extends JPanel {
      * @param background the background color or null to use the default
      * @return this for convenient chaining of method calls
      */
+    /*
     public AsciiPanel write(String string, int x, int y, Color foreground, Color background) {
         if (string == null)
             throw new NullPointerException("string must not be null.");
@@ -857,7 +885,7 @@ public class AsciiPanel extends JPanel {
         }
         return this;
     }
-
+    
     /**
      * Write a string to the center of the panel at the specified y position. This
      * updates the cursor's position.
@@ -866,6 +894,7 @@ public class AsciiPanel extends JPanel {
      * @param y      the distance from the top to begin writing from
      * @return this for convenient chaining of method calls
      */
+     /*
     public AsciiPanel writeCenter(String string, int y) {
         if (string == null)
             throw new NullPointerException("string must not be null");
@@ -881,7 +910,7 @@ public class AsciiPanel extends JPanel {
 
         return write(string, x, y, defaultForegroundColor, defaultBackgroundColor);
     }
-
+    
     /**
      * Write a string to the center of the panel at the specified y position with
      * the specified foreground color. This updates the cursor's position but not
@@ -892,6 +921,7 @@ public class AsciiPanel extends JPanel {
      * @param foreground the foreground color or null to use the default
      * @return this for convenient chaining of method calls
      */
+    /*
     public AsciiPanel writeCenter(String string, int y, Color foreground) {
         if (string == null)
             throw new NullPointerException("string must not be null");
@@ -907,7 +937,7 @@ public class AsciiPanel extends JPanel {
 
         return write(string, x, y, foreground, defaultBackgroundColor);
     }
-
+    
     /**
      * Write a string to the center of the panel at the specified y position with
      * the specified foreground and background colors. This updates the cursor's
@@ -919,6 +949,7 @@ public class AsciiPanel extends JPanel {
      * @param background the background color or null to use the default
      * @return this for convenient chaining of method calls
      */
+    /*
     public AsciiPanel writeCenter(String string, int y, Color foreground, Color background) {
         if (string == null)
             throw new NullPointerException("string must not be null.");
@@ -970,4 +1001,5 @@ public class AsciiPanel extends JPanel {
                 backgroundColors[x][y] = data.backgroundColor;
             }
     }
+    */
 }

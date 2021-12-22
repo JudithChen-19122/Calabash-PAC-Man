@@ -7,7 +7,18 @@ public class World {
     private Tile<Thing>[][] tiles;
     private Tile<Thing>[][] tiles_props;// the game item includes beans and magic props
 
+    private int state;
+
+    public int get_state(){
+        return state;
+    }
+
+    public void set_state(int s){
+        state = s;
+    }
+
     public World() {
+        state = 1;
 
         if (tiles == null) {
             tiles = new Tile[WIDTH][HEIGHT];
