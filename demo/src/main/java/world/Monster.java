@@ -30,9 +30,9 @@ public class Monster extends Creature {
     public void run() {
         // TODO Auto-generated method stub
         while(!isdead){
-            if(world.get_state()!=2) break;
+            if(world.get_state()!=2 && world.get_state()!=11) break;
             int dir = ((int)(Math.random()*100)) % 4 + 1;
-            // System.out.println("here");
+            //System.out.println("here");
             moveAction(dir);
         
             try {

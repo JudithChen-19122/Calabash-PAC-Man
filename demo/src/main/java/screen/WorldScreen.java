@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -19,6 +20,8 @@ import world.Wall;
 import world.Beans;
 
 import asciiPanel.AsciiPanel;
+import network.Client;
+import network.Server;
 import world.Calabashbros;
 import world.Creature;
 import world.Floor;
@@ -44,6 +47,17 @@ public class WorldScreen implements Screen {
     private Color red;
     private int goal;
     String saved_game;
+    int id;
+
+    private Client client;
+    private Server server;
+    final String t1 = "move";
+    final String t2 = "magic";
+    final String t3 = "map";
+    final String t4 = "id";
+
+
+    private Calabashbros[] players;
     
     Monster monster1;
     Monster monster2;
@@ -55,8 +69,186 @@ public class WorldScreen implements Screen {
     Replayer replayer;
 
 
+    public int get_state(){
+        return state;
+    }
+
+    public void set_id(int i){
+        id = i;
+    }
+
     public Map get_map(){
         return map;
+    }
+
+    public void sent_Server_info(String s){
+        if(state != 9 && state != 11 ) return;
+        server.send_info(s);
+    }
+
+    public String server_receive_info(String s){
+        String[] x = s.split(" ");
+        int id = Integer.parseInt(x[0]);
+        int dir = Integer.parseInt(x[1]);
+        if(players[id]!=null && !players[id].checkifdead())
+            players[id].moveAction(dir);
+        return s;
+    }
+
+    public String client_receive_info(String s) throws IOException{
+            String[]temp = s.split("\n");
+            for(int i=0;i<temp.length;i++){
+                String[] stmp = null;
+                stmp = temp[i].split(" ");
+                if(stmp[0].equals(t3)){ // receive prop map info
+                    map_for_props=new int[30][30];
+                    for(int j=0;j<30;j++){
+                        i++;
+                        stmp = temp[i].split(" ");
+                        for (int k = 0; k < 30; k++) {
+                            map_for_props[j][k] = Integer.parseInt(stmp[k]);
+                        } 
+                    }
+                    build_client_online();
+                }
+                else if (stmp[0].equals(t1)) {
+                    map.moveAction(Integer.parseInt(stmp[1]), Integer.parseInt(stmp[2]), Integer.parseInt(stmp[3]),
+                    Integer.parseInt(stmp[4]));
+                }
+                else if(stmp[0].equals(t2))
+                    map.set_inmagic();
+                else if(stmp[0].equals(t4))
+                    id = Integer.parseInt(stmp[1]);
+            }
+            return s;
+    }
+
+    public void set_online_monster_player(){
+         // set players
+         players[0] = new Calabashbros(new Color(204, 0, 0), (char) 2, world, map , 1);
+         world.put(players[0], 17, 10);
+         creatures.add(players[0]);
+         map.add_creature_to_map(3, 17, 10);
+
+         players[1] = new Calabashbros(new Color(244, 165, 0), (char) 2, world, map , 1);
+         world.put(players[1], 16, 10);
+         creatures.add(players[1]);
+         map.add_creature_to_map(3, 16, 10);
+
+        players[2] = new Calabashbros(new Color(252, 233, 79), (char) 2, world, map, 1);
+        world.put(players[2], 15, 10);
+        creatures.add(players[2]);
+        map.add_creature_to_map(3, 15, 10);
+ 
+        players[0].setgoal(goal);
+        players[1].setgoal(goal);
+        players[2].setgoal(goal);
+ 
+         // set monsters
+         monster1 = new Monster(new Color(0, 0, 139), (char) 15, world, map);
+         monster2 = new Monster(new Color(139, 28, 98), (char) 15, world, map);
+         monster3 = new Monster(new Color(139, 125, 123), (char) 15, world, map);
+         monster4 = new Monster(new Color(0, 0, 139), (char) 15, world, map);
+         monster5 = new Monster(new Color(139, 28, 98), (char) 15, world, map);
+         monster6 = new Monster(new Color(139, 125, 123), (char) 15, world, map);
+         world.put(monster1, 22, 19);
+         world.put(monster2, 7, 10);
+         world.put(monster3, 10, 25);
+         world.put(monster4, 2, 9);
+         world.put(monster5, 13, 4);
+         world.put(monster6, 20, 19);
+         creatures.add(monster1);
+         creatures.add(monster2);
+         creatures.add(monster3);
+         creatures.add(monster4);
+         creatures.add(monster5);
+         creatures.add(monster6);
+         map.add_creature_to_map(2, 22, 19);
+         map.add_creature_to_map(2, 7, 10);
+         map.add_creature_to_map(2, 10, 25);
+         map.add_creature_to_map(2, 2, 9);
+         map.add_creature_to_map(2, 13, 4);
+         map.add_creature_to_map(2, 20, 19);
+
+    }
+
+    public int build_client_online() throws IOException{
+        //state = 10;
+        world = new World();
+        //world.set_state(10);
+        creatures = new ArrayList<Creature>();
+        wall = new Wall(world);
+
+        // build map world
+        map = new Map(world);
+        map.load_map();
+        map.init_log();
+
+        maze = map.get_init_map();
+        map_for_props[20][25] = 1;
+        map.load_saved_map(maze, map_for_props);
+        put_wall_beans();
+        goal=map.get_total_beans();
+        //System.out.println("client goal: " + goal);
+        //set monster and player
+        set_online_monster_player();
+
+        state = 12;
+        world.set_state(12);
+
+        map.init_creatures(creatures);
+
+        return state;
+
+    }
+
+    public int build_online_game() throws IOException{
+        //state = 9;
+        world = new World();
+        //world.set_state(9);
+        creatures = new ArrayList<Creature>();
+        wall = new Wall(world);
+
+        // build map world
+        map = new Map(world, server);
+        map.load_map();
+        map.init_log();
+
+        maze = map.get_init_map();
+        map_for_props = map.get_prop_map();
+        map_for_props[20][25] = 1;
+        map.load_saved_map(maze, map_for_props);
+        put_wall_beans();
+        goal=map.get_total_beans();
+        //System.out.println("server goal: " + goal);
+
+        //set monster and player
+        set_online_monster_player();
+
+        int[][] now_prop_map = map.get_prop_map();
+        String prop_init="map"+"\n";
+        for(int i=0; i<30;i++){
+            for(int j=0; j<30;j++){
+                prop_init += now_prop_map[i][j] + " ";
+            }
+            prop_init += "\n";
+        }
+        server.send_info(prop_init);
+ 
+
+        state = 11;
+        world.set_state(11);
+
+        map.init_creatures(creatures);
+  
+        exec = Executors.newCachedThreadPool();
+        //System.out.println("creatures:" + creatures.size());
+        for(int i=0;i<creatures.size();i++){
+            exec.execute(new Thread(creatures.get(i)));
+        }
+
+        return state;
+
     }
 
     public void excute_log() throws IOException{
@@ -138,7 +330,7 @@ public class WorldScreen implements Screen {
         m.set_monster(Boolean.valueOf(stmp[2]).booleanValue(), Boolean.valueOf(stmp[3]).booleanValue(), Integer.parseInt(stmp[4]));
     }
 
-    public void rebuild_saved_game() throws IOException{
+    public int rebuild_saved_game() throws IOException{
         state = 6;
         world = new World();
         world.set_state(6);
@@ -254,6 +446,8 @@ public class WorldScreen implements Screen {
             creatures.add(player);
         }
 
+        if(Integer.parseInt(stmp[6])<10) map.set_has_magic();
+
         map.init_creatures(creatures);
 
         state=2;
@@ -261,11 +455,12 @@ public class WorldScreen implements Screen {
         exec = Executors.newCachedThreadPool();
         for(int i=0;i<creatures.size();i++){
             exec.execute(new Thread(creatures.get(i)));
-
         }
+
+        return state;
     }
 
-    public void replay_game_screen() throws IOException{
+    public int replay_game_screen() throws IOException{
         //back to the start
 
 
@@ -288,6 +483,8 @@ public class WorldScreen implements Screen {
 
         //replay
         excute_log();
+
+        return state;
 
 
 
@@ -353,7 +550,7 @@ public class WorldScreen implements Screen {
 
     }
 
-    public void build_game_screen() throws IOException {
+    public int build_game_screen() throws IOException {
         //clear log file
         log="";
         File file =new File("mylog.txt");
@@ -404,12 +601,15 @@ public class WorldScreen implements Screen {
         for(int i=0;i<creatures.size();i++){
             exec.execute(new Thread(creatures.get(i)));
         }
+
+        return state;
     }
 
-    public void build_start_screen() {
+    public int build_start_screen() {
         state = 1;
         world = new World();
         world.set_state(1);
+        return state;
     }
 
     public void show_start(AsciiPanel terminal) {
@@ -417,16 +617,34 @@ public class WorldScreen implements Screen {
         String a="PRESS \"A\" TO START";
         String b="PRESS \"B\" TO CONTINUE";
         String c="PRESS \"C\" TO PLAYBACK";
+        String d="PRESS \"H\" TO BE HOST";
+        String e="PRESS \"J\" TO JION";
+        String f="Online game only support";
+        String g="one server two client";
 
         for(int i=0;i<a.length();i++){
-            terminal.write((char) a.charAt(i), 5+i, 10, white);
+            terminal.write((char) a.charAt(i), 4+i, 5, white);
         }
         for(int i=0;i<b.length();i++){
-            terminal.write((char) b.charAt(i), 4+i, 15, white);
+            terminal.write((char) b.charAt(i), 4+i, 10, white);
         }
         for(int i=0;i<c.length();i++){
-            terminal.write((char) c.charAt(i), 4+i, 20, white);
+            terminal.write((char) c.charAt(i), 4+i, 15, white);
         }
+        for(int i=0;i<d.length();i++){
+            terminal.write((char) d.charAt(i), 4+i, 20, white);
+        }
+        for(int i=0;i<e.length();i++){
+            terminal.write((char) e.charAt(i), 4+i, 24, white);
+        }
+        for(int i=0;i<f.length();i++){
+            terminal.write((char) f.charAt(i), 2+i, 27, white);
+        }
+        for(int i=0;i<g.length();i++){
+            terminal.write((char) g.charAt(i), 4+i, 28, white);
+        }
+
+
 
     }
 
@@ -445,6 +663,13 @@ public class WorldScreen implements Screen {
         }        
     }
 
+    public void show_wait(AsciiPanel terminal){
+        String w="WAITING...";
+        for(int i=0;i<w.length();i++){
+            terminal.write((char) w.charAt(i), 9+i, 15, white);
+        }        
+    }
+
     public void show_game_info(AsciiPanel terminal) {
         String l="LIFE:";
 
@@ -456,9 +681,25 @@ public class WorldScreen implements Screen {
             terminal.write((char) 3, 6 + i, 30, red);
         }
 
+        String q="Press Q to save&quit";
+        for(int i=0;i<q.length();i++){
+            terminal.write((char) q.charAt(i), i+10, 30, white);
+        } 
     }
 
-    public void build_fail_screen() {
+    public void show_game_info(AsciiPanel terminal, int id) {
+        String l="LIFE:";
+
+        for(int i=0;i<l.length();i++){
+            terminal.write((char) l.charAt(i), i, 30, white);
+        } 
+   
+        for (int i = 0; i < players[id].getlife(); i++) {
+            terminal.write((char) 3, 6 + i, 30, red);
+        }
+    }
+
+    public int build_fail_screen() {
         state = 4;
         map=null;
         creatures=null;
@@ -466,18 +707,41 @@ public class WorldScreen implements Screen {
         
         world = new World();
         world.set_state(4);
+        return state;
     }
 
-    public void build_won_screen() {
+    public int build_won_screen() {
         state = 3;
         map=null;
         creatures=null;
         player=null;
         world = new World();
         world.set_state(3);
+        return state;
+    }
+
+    public int build_wait_screen_server(){
+        state = 9;
+        world = new World();
+        world.set_state(9);
+        server = new Server(this); 
+        Thread server_thr = new Thread(server);
+        server_thr.start();
+        return state;
+    }
+
+    public int build_wait_screen_client() throws UnknownHostException, IOException{
+        state = 10;
+        world = new World();
+        world.set_state(10);
+        client = new Client(this);
+        client.connect(12345);
+        return state;
     }
 
     public WorldScreen() throws IOException {
+        players = new Calabashbros[4];
+        id = 0;
         white = new Color(255, 255, 255);
         red = new Color(255, 0, 0);
         build_start_screen();
@@ -504,6 +768,16 @@ public class WorldScreen implements Screen {
                     show_win(terminal);
                 } else if (state == 4) {
                     show_fail(terminal);
+                } else if(state == 9||state == 10){
+                    show_wait(terminal);
+                }
+                if(state == 11 || state == 12){
+                    terminal.write(world.get_props(x, y).getGlyph(), x, y, world.get_props(x, y).getColor());
+                    if (world.get(x, y).get_type() != 1)
+                        terminal.write(world.get(x, y).getGlyph(), x, y, world.get(x, y).getColor());
+                    show_game_info(terminal, id);
+                    if(players[0].checkifdead()&&players[1].checkifdead()&&players[2].checkifdead()) build_fail_screen();
+                    else if(players[id].checkifwin()) build_won_screen();
                 }
             }
         }
@@ -521,6 +795,12 @@ public class WorldScreen implements Screen {
             }
             else if(key.getKeyCode()==KeyEvent.VK_C){
                 replay_game_screen();
+            }
+            else if(key.getKeyCode()==KeyEvent.VK_H){
+                build_wait_screen_server();
+            }
+            else if(key.getKeyCode()==KeyEvent.VK_J){
+                build_wait_screen_client();
             }
         }
         else if (state == 2) {
@@ -552,7 +832,42 @@ public class WorldScreen implements Screen {
                 state = 1;
                 build_start_screen();
             }
-            
+        }
+        else if(state==12){
+            switch (key.getKeyCode()) {
+                case KeyEvent.VK_W:
+                    client.send( id +" 1");
+                    break;
+                case KeyEvent.VK_S:
+                    client.send( id +" 2");
+                    break;
+                case KeyEvent.VK_A:
+                    client.send( id +" 3");
+                    break;
+                case KeyEvent.VK_D:
+                    client.send( id +" 4");
+                    break;
+                default:
+                    ;
+            }   
+        }
+        else if(state==11){
+            switch (key.getKeyCode()) {
+                case KeyEvent.VK_W:
+                    players[0].moveAction(1);
+                    break;
+                case KeyEvent.VK_S:
+                    players[0].moveAction(2);
+                    break;
+                case KeyEvent.VK_A:
+                    players[0].moveAction(3);
+                    break;
+                case KeyEvent.VK_D:
+                    players[0].moveAction(4);
+                    break;
+                default:
+                    ;
+            }
         }
         return this;
     }

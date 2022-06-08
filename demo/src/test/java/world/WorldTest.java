@@ -21,7 +21,7 @@ public class WorldTest {
         for(int i=17;i>7;i--){ //calashbro to monster
             map.moveAction(i, 10, i-1, 10);
         }
-        assertEquals(1, 1);
+        assertEquals(map.checkmap(17, 10), 3);
     }
 }
 

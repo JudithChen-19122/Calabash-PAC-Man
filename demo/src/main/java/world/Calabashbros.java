@@ -7,7 +7,7 @@ import javax.lang.model.util.ElementScanner6;
 public class Calabashbros extends Creature{
 
      // everyone owns 3 life at first
-    int score; //eat beans to get score
+    static int score =0; //eat beans to get score
     boolean ifmagic; //check if it is in magic time, when using magic it can kill the monster
      
     final int magictime = 10; //the magic lasts
@@ -19,7 +19,15 @@ public class Calabashbros extends Creature{
         super(color, glyph, world, tmap, 3);
         //TODO Auto-generated constructor stub
         life = 3;
-        score= 0;
+        magic_count = 10;
+        ifmagic = false;
+        type=3;
+    }
+
+    public Calabashbros(Color color, char glyph, World world,Map tmap, int li) {
+        super(color, glyph, world, tmap, 3);
+        //TODO Auto-generated constructor stub
+        life = li;
         magic_count = 10;
         ifmagic = false;
         type=3;
@@ -118,7 +126,7 @@ public class Calabashbros extends Creature{
     public void run() {
         // TODO Auto-generated method stub
         while(!isdead){
-            if(world.get_state()!=2)break;
+            if(world.get_state()!=2 && world.get_state()!=11)break;
                 magic_counter();
             //System.out.println("counter++");
             try {

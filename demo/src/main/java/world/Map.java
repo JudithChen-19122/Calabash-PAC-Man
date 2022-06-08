@@ -10,6 +10,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
+import network.Server;
+
 public class Map {
 
     private int[][] init_map;// map from file map_design.txt
@@ -19,10 +21,15 @@ public class Map {
     String log_map;// log for replay
     private int magic_log;
     private int has_magic;
+    private Server server;
 
     private ArrayList<Creature> creatures;
 
     World world;
+
+    public int checkmap(int x, int y){
+        return map[x][y];
+    }
 
     public void init_log() {
         log_map = "";
@@ -40,6 +47,12 @@ public class Map {
 
     public Map(World tworld) {
         world = tworld;
+        server = null;
+    }
+
+    public Map(World tworld, Server s){
+        world = tworld;
+        server = s;
     }
 
     public void load_saved_map(int[][] sa_map, int[][] sa_prop_map) {
@@ -110,6 +123,15 @@ public class Map {
         }
     }
 
+    public void load_old_prop_map(int[][] sa_prop_map){
+        prop_map = new int[30][30];
+        for (int i = 0; i < 30; i++) {
+            for (int j = 0; j < 30; j++) {
+                prop_map[i][j] = sa_prop_map[i][j];
+            }
+        }
+    }
+
     public void load_old_prop_map() throws IOException {
         BufferedReader bf_prop = new BufferedReader(
                 new FileReader("init_prop_map.txt"));
@@ -130,6 +152,15 @@ public class Map {
     }
 
     public int get_total_beans() {
+        int temp = 0;
+        for(int i=0;i<30;i++){
+            for(int j=0;j<30;j++){
+                if(prop_map[i][j]==4){
+                    temp++;
+                }
+            }
+        }
+        num_beans=temp;
         return num_beans;
     }
 
@@ -175,17 +206,33 @@ public class Map {
             creatures.get(i).set_inmagic();
     }
 
+    public void set_has_magic(){
+        has_magic = 1;
+    }
+
     // creature moving action includes the calabsh eating beans
     public synchronized void moveAction(int x, int y, int nx, int ny) {
+
         if (magic_log == 0 && has_magic == 1) {
             if (check_magic()) {
                 log_map += "magic" + "\n";
                 magic_log++;
+                if(server != null){
+                    String s = "magic" + "\n";
+                    server.send_info(s);
+                }
             }
         }
         // change dirction icon of calabashbros
         log_map += "move" + " ";
         log_map += x + " " + y + " " + nx + " " + ny + "\n";
+
+        if(server != null){
+            String s = "move" + " "+ x + " " + y + " " + nx + " " + ny + "\n";
+            //System.out.println("read to send info: " + s);
+            server.send_info(s);
+            //System.out.println("finish send info: " + s);
+        }
 
         if (map[x][y] == 3) {
             Creature c = null;
@@ -259,11 +306,17 @@ public class Map {
                     }
                 } else { // the calabash been killed
                     c.beenkill();
-                    // creatures.remove(c); //the calabash been killed
-                    world.put(c, 17, 10);
-                    map[17][10] = 3;
-                    world.put(new Floor(world), x, y);
-                    map[x][y] = 1;
+                    if(!c.checkifdead()){
+                        world.put(c, 17, 10);
+                        map[17][10] = 3;
+                        world.put(new Floor(world), x, y);
+                        map[x][y] = 1;
+                    }
+                    else{
+                        world.put(new Floor(world), x, y);
+                        map[x][y] = 1;
+                        creatures.remove(c); //the calabash been kille
+                    }
                 }
             }
         } else if (map[nx][ny] == 3 && map[x][y] == 2) { // monster to calabash
@@ -281,13 +334,20 @@ public class Map {
                 if (m.attack(c)) {
                     map[nx][ny] = 1;
                     c.beenkill();
-                    // creatures.remove(c); //the calabash been killed
-                    world.put(c, 17, 10);
-                    map[17][10] = 3;
-                    world.put(new Floor(world), nx, ny);
-                    world.put(c, 17, 10);
-                    world.swap(x, y, nx, ny);
-                    swap(x, y, nx, ny);
+                    if(!c.checkifdead()){
+                        world.put(c, 17, 10);
+                        map[17][10] = 3;
+                        world.put(new Floor(world), nx, ny);
+                        world.put(c, 17, 10);
+                        world.swap(x, y, nx, ny);
+                        swap(x, y, nx, ny);
+                    }
+                    else{
+                        world.put(new Floor(world), nx, ny);
+                        world.swap(x, y, nx, ny);
+                        swap(x, y, nx, ny);
+                        creatures.remove(c); //the calabash been killed
+                    }
                 } else {
                     // the monster been killed
                     m.beenkill();
